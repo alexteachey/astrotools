@@ -15,6 +15,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 dim_choice = int(raw_input('how many dimensions do you want? '))
 test_type = raw_input("Do you want to test 'a'ccuracy, or 's'catter plotting? ")
+run_sintest = raw_input("Do you want to run a sintest? y/n: ")
 
 
 
@@ -53,67 +54,71 @@ col16 = []
 
 #def read_data():
 #data = open('../Data/post1.dat', mode='r') #reflects file location on Umbriel
-data = open('../Data/LRVplan1-post_equal_weights.dat', mode='r')
-#for i in np.arange(0,35097,1): #not flexible right now
-for i in data:
-    #linedata = data.readline().split()
-    linedata = i.split()
-    col1.append(float(linedata[0]))
-    col2.append(float(linedata[1]))
-    col3.append(float(linedata[2]))
-    col4.append(float(linedata[3]))
-    col5.append(float(linedata[4]))
-    col6.append(float(linedata[5]))
-    col7.append(float(linedata[6]))
-    col8.append(float(linedata[7]))
-    """
-    col9.append(float(linedata[8]))
-    col10.append(float(linedata[9]))
-    col11.append(float(linedata[10]))
-    col12.append(float(linedata[11]))
-    col13.append(float(linedata[12]))
-    col14.append(float(linedata[13]))
-    col15.append(float(linedata[14]))
-    col16.append(float(linedata[15]))
-    """
-    
-col1 = np.array(col1)
-col2 = np.log10(np.array(col2)) #per David's instructions, Oct 29.
-col3 = np.array(col3)
-col4 = np.array(col4)
-col5 = np.array(col5)
-col6 = np.array(col6)
-col7 = np.array(col7)
-col8 = np.array(col8)
-"""
-col9 = np.array(col9)
-col10 = np.array(col10)
-col11 = np.array(col11)
-col12 = np.array(col12)
-col13 = np.array(col13)
-col14 = np.array(col14)
-col15 = np.array(col15)
-col16 = np.array(col16)
-"""
 
-"""
-colchoice = np.linspace(-2*np.pi,2*np.pi,100000)
-col1 = np.random.choice(colchoice, size=1000)
-col2 = np.random.choice(colchoice, size=1000)
-col3 = np.random.choice(colchoice, size=1000)
-col6 = np.random.choice(colchoice, size=1000)
-col7 = np.random.choice(colchoice, size=1000)
-#col16 = sinfun(col1,col2,col3) 3D
-if dim_choice == 2:
-    col16 = sinfun(col1,col3, dim_choice)
-elif dim_choice == 3:
-    col16 = sinfun(col1,col2, dim_choice, e3=col3)
-elif dim_choice == 4:
-    col16 = sinfun(col1, col2, dim_choice, e3=col3, e4=col6)
-elif dim_choice == 5:
-    col16 = sinfun(col1, col2, dim_choice, e3=col3, e4=col6, e5=col7)
-"""
+if run_sintest == 'n':
+    data = open('../Data/LRVplan1-post_equal_weights.dat', mode='r')
+    #for i in np.arange(0,35097,1): #not flexible right now
+    for i in data:
+        #linedata = data.readline().split()
+        linedata = i.split()
+        col1.append(float(linedata[0]))
+        col2.append(float(linedata[1]))
+        col3.append(float(linedata[2]))
+        col4.append(float(linedata[3]))
+        col5.append(float(linedata[4]))
+        col6.append(float(linedata[5]))
+        col7.append(float(linedata[6]))
+        col8.append(float(linedata[7]))
+        """
+        col9.append(float(linedata[8]))
+        col10.append(float(linedata[9]))
+        col11.append(float(linedata[10]))
+        col12.append(float(linedata[11]))
+        col13.append(float(linedata[12]))
+        col14.append(float(linedata[13]))
+        col15.append(float(linedata[14]))
+        col16.append(float(linedata[15]))
+        """
+        
+    col1 = np.array(col1)
+    col2 = np.log10(np.array(col2)) #per David's instructions, Oct 29.
+    col3 = np.array(col3)
+    col4 = np.array(col4)
+    col5 = np.array(col5)
+    col6 = np.array(col6)
+    col7 = np.array(col7)
+    col8 = np.array(col8)
+    """
+    col9 = np.array(col9)
+    col10 = np.array(col10)
+    col11 = np.array(col11)
+    col12 = np.array(col12)
+    col13 = np.array(col13)
+    col14 = np.array(col14)
+    col15 = np.array(col15)
+    col16 = np.array(col16)
+    """
 
+elif run_sintest == 'y': #this will supercede what came before.
+    colchoice = np.linspace(-2*np.pi,2*np.pi,100000)
+    col1 = np.random.choice(colchoice, size=1000)
+    col2 = np.random.choice(colchoice, size=1000)
+    col3 = np.random.choice(colchoice, size=1000)
+    col4 = np.random.choice(colchoice, size=1000)
+    col5 = np.random.choice(colchoice, size=1000)
+    col6 = np.random.choice(colchoice, size=1000)
+    col7 = np.random.choice(colchoice, size=1000)
+    #col16 = sinfun(col1,col2,col3) 3D
+    if dim_choice == 2:
+        col16 = sinfun(col2,col6, dim_choice) #was this the problem (nov 1)? was col2 and col7.
+    elif dim_choice == 3:
+        col16 = sinfun(col2,col6, dim_choice, e3=col7)
+    elif dim_choice == 4:
+        col16 = sinfun(col2, col6, dim_choice, e3=col7, e4=col4)
+    elif dim_choice == 5:
+        col16 = sinfun(col1, col2, dim_choice, e3=col3, e4=col6, e5=col7)
+
+    col8 = col16 #takes care of using col8 as the results column.
 
 
 
@@ -134,7 +139,7 @@ def coordpair(coordperm,ndim,nmatches):
         while False in temparray:
             idxj = idxj+1
             try:
-                temparray = coordinate_permutations[idxi][(ndim-nmatches):] == coordinate_permutations[idxj][(ndim-nmatches):] #for 5D, matching four points, this is[1:]
+                temparray = coordinate_permutations[idxi][(ndim-nmatches):] == coordinate_permutations[idxj][(ndim-nmatches):] #for 5D, matching fours, this is[1:]
             except:
                 break
         if idxj != len(coordinate_permutations):
@@ -431,18 +436,27 @@ def interp(point):
     print "X X X X X X X X X X"
     print " "
     print " "
+    
+    
+    #DAVID"S TEST PER OCT 30 E-MAIL
+    final_minus_true = np.abs(final_value - actual_value)
+    final_minus_nearest = np.abs(final_value - nearest_value)
+        
+    
+    
+    #### RETURN SECTION ####
     if test_type == 'a':
-        return final_value, actual_value, c2cmean
+        return final_value, actual_value, c2cmean, final_minus_true, final_minus_nearest
     elif test_type == 's':
         if dim_choice == 2:
-            return point[0], point[1], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals)
+            return point[0], point[1], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals), final_minus_true, final_minus_nearest
         elif dim_choice == 3:
-            return point[0], point[1], point[2], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals)
+            return point[0], point[1], point[2], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals), final_minus_true, final_minus_nearest
 
 
 
 
-
+    
 
 
 
@@ -453,9 +467,12 @@ def interp(point):
 ###### SINUNSOIDAL TEST FUNCTION #############
 
 def sintest():
+    test_type = 'a'
     interpvals = []
     actvals = []
     meandistances = []
+    final_minus_nearest = []
+    final_minus_true = []
     for i in np.arange(0,10000,1):
         try:
             if dim_choice == 2:
@@ -466,12 +483,21 @@ def sintest():
                 function_output = interp(pointgen(4))
             elif dim_choice == 5:
                 function_output = interp(pointgen(5))
-            try:
-                interpvals.append(function_output[0])
-                actvals.append(function_output[1])
-                meandistances.append(function_output[2])
-            except:
-                raise Exception("There's something not right here. I feel cold, death.")
+            #try:
+            interpvals.append(function_output[0])
+            actvals.append(function_output[1])
+            meandistances.append(function_output[2])
+            final_minus_true.append(function_output[3])
+            final_minus_nearest.append(function_output[4])
+            
+            test_final_minus_true = np.abs(function_output[0] - function_output[1])
+            if final_minus_true != test_final_minus_true:
+                print "final_minus_true = ", final_minus_true
+                print "test_final_minus_true = ", test_final_minus_true
+                raise Exception('final_minus_true != test_final_minus_true')
+                
+            #except:
+                #raise Exception("There's something not right here. I feel cold, death.")
         except:
             pass
         print "len(interpvals) = ", len(interpvals)
@@ -523,6 +549,8 @@ def sintest():
     plt.show()
 
 
+
+
     # SCATTER PLOT, WITH AVGS AND ERRORBARS.    
     errorbins = np.linspace(np.amin(meandistances), np.amax(meandistances), 20)
     print "errorbins = ", errorbins
@@ -557,6 +585,30 @@ def sintest():
     plt.title(str(dim_choice)+'D Error Function')
     plt.show()
 
+
+
+    ### DAVID'S REQUESTED PLOT PER OCT 30 E-MAIL.
+    plt.scatter(final_minus_true, final_minus_nearest, s=10, alpha=0.1, c='r')
+    plt.plot(np.linspace(0,2,10), np.linspace(0,2,10), c='k    ')
+    plt.xlabel('| Derived Function Value - True Function Value |')
+    plt.ylabel('| Derived Function Value - Nearest Neighbor Function Value |')
+    plt.xlim(0,2)
+    plt.ylim(0,2)
+    #H, xedges, yedges = np.histogram2d(final_minus_nearest, final_minus_true, bins=400)
+    #plt.colorbar()
+    #plt.imshow(H, interpolation='none', origin='low')
+    plt.title('3D Interpolation Error')
+    plt.xlim(0,2)
+    plt.ylim(0,2)
+    plt.grid()
+    plt.show()
+    
+    
+    #H, xedges, yedges = np.histogram2d(final_minus_nearest, final_minus_true, bins=(xedges, yedges), interpolation='none')
+    #plt.imshow(H)
+    #plt.show()
+    
+    
 
 ####### END SINUSOIDAL TEST FUNCTION #################        
 
@@ -624,7 +676,7 @@ def bigshow(dims):
 
 
 def testshow():
-    plt.scatter(col6,col7, c=(col8/np.amax(col8)), alpha=0.5, s=50)
+    plt.scatter(col2,col6, c=(col8/np.amax(col8)), alpha=0.5, s=50)
     plt.grid()
     plt.show()
 

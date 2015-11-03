@@ -16,6 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D
 dim_choice = int(raw_input('how many dimensions do you want? '))
 test_type = raw_input("Do you want to test 'a'ccuracy, or 's'catter plotting? ")
 run_sintest = raw_input("Do you want to run a sintest? y/n: ")
+numpoints = int(raw_input('how many points do you want to generate in the random sample? '))
 
 
 
@@ -100,14 +101,14 @@ if run_sintest == 'n':
     """
 
 elif run_sintest == 'y': #this will supercede what came before.
-    colchoice = np.linspace(-2*np.pi,2*np.pi,100000)
-    col1 = np.random.choice(colchoice, size=1000)
-    col2 = np.random.choice(colchoice, size=1000)
-    col3 = np.random.choice(colchoice, size=1000)
-    col4 = np.random.choice(colchoice, size=1000)
-    col5 = np.random.choice(colchoice, size=1000)
-    col6 = np.random.choice(colchoice, size=1000)
-    col7 = np.random.choice(colchoice, size=1000)
+    colchoice = np.linspace(-np.pi,np.pi,100000)
+    col1 = np.random.choice(colchoice, size=numpoints)
+    col2 = np.random.choice(colchoice, size=numpoints)
+    col3 = np.random.choice(colchoice, size=numpoints)
+    col4 = np.random.choice(colchoice, size=numpoints)
+    col5 = np.random.choice(colchoice, size=numpoints)
+    col6 = np.random.choice(colchoice, size=numpoints)
+    col7 = np.random.choice(colchoice, size=numpoints)
     #col16 = sinfun(col1,col2,col3) 3D
     if dim_choice == 2:
         col16 = sinfun(col2,col6, dim_choice) #was this the problem (nov 1)? was col2 and col7.
@@ -121,6 +122,8 @@ elif run_sintest == 'y': #this will supercede what came before.
     col8 = col16 #takes care of using col8 as the results column.
 
 
+    samplespace_density =len(col1)/ ((4*np.pi)**2)
+    print "sample space density = ", samplespace_density
 
 
 
@@ -176,6 +179,10 @@ def interp(point):
         #rows = np.vstack((col1,col3))
         #REFLECTS OCT 28 DATA.
         rows = np.vstack((col2,col6))
+        #print "rows = ", rows
+        #print "rows.T = ", rows.T
+        #print "rows[0] = ", rows[0]
+        print "rows.T[0] = ", rows.T[0]
     elif numdims == 3:
         #rows = np.vstack((col1,col2,col3))
         # REFLECTS OCT 28 DATA.
@@ -186,13 +193,31 @@ def interp(point):
         rows = np.vstack((col1,col2,col3,col6,col7))
     #finding distance to each point
     distances = []
-    for i in np.arange(0,len(col1),1): #should make this dynamic
-        distance = np.sqrt(np.sum(( point - rows.T[i])**2))
+    for i in np.arange(0,len(col1),1): #for each point in your sample, calculate a distance.
+        distance = np.sqrt(np.sum( ( point - rows.T[i])**2) )
+        #print "distance = ", distance
         distances.append(distance)
     distances = np.array(distances)
     sorted_args = np.argsort(distances) 
-    sorted_distances = distances[sorted_args] 
+    sorted_distances = distances[sorted_args]
+    sorted_distances2 = np.sort(distances)
+    if False in (sorted_distances == sorted_distances2):
+        print "DETECTED A ERROR IN SORTED DISTANCES"
+    else:
+        print "SORTED DISTANCES WORKING."
+    #print "len(sorted_distances) = ", len(sorted_distances)
+    
+    #print "sorted distance test = ", sorted_distances == sorted_distances2
+
+
+    #print "sorted_distances = ", sorted_distances
     nearest_value = col8[sorted_args][0]
+    print "nearest_value = ", col8[sorted_args][0]
+    print "nearest_point = ", col2[sorted_args][0], col6[sorted_args][0]
+    print "test point = ", point
+    print "distance to nearest point = ", sorted_distances[0]
+    print "calculated distance to nearest point (invalid above 2D)= ", np.sqrt((point[0] - col2[sorted_args][0])**2 + (point[1] - col6[sorted_args][0])**2)
+
     
 
 
@@ -261,7 +286,7 @@ def interp(point):
             realcoords.append(p)
             functionvals.append(col8[a])
             coords01.append(differences)
-            print "coord found = ", differences
+            print "coord found = ", differences, tuple(p)
 
             new.append(1)
             try:
@@ -390,7 +415,7 @@ def interp(point):
             dx1x0 = np.sqrt(np.sum(dx1x0))
             xd = dppx0/dx1x0
             """
-            print "pairpoint = ", np.array(pairpoint)
+
             print "firstval = ", np.array(firstval)
             print "secondval = ", np.array(secondval)
 
@@ -446,7 +471,7 @@ def interp(point):
     
     #### RETURN SECTION ####
     if test_type == 'a':
-        return final_value, actual_value, c2cmean, final_minus_true, final_minus_nearest
+        return final_value, actual_value, c2cmean, final_minus_true, final_minus_nearest, nearest_value, sorted_distances[0], col2[sorted_args][0], col6[sorted_args][0], point[0], point[1]
     elif test_type == 's':
         if dim_choice == 2:
             return point[0], point[1], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals), final_minus_true, final_minus_nearest
@@ -470,9 +495,15 @@ def sintest():
     test_type = 'a'
     interpvals = []
     actvals = []
+    nearest_distances = []
     meandistances = []
     final_minus_nearest = []
     final_minus_true = []
+    nearest_values = []
+    nearest_x = []
+    nearest_y = []
+    point_x = []
+    point_y = []
     for i in np.arange(0,10000,1):
         try:
             if dim_choice == 2:
@@ -489,6 +520,12 @@ def sintest():
             meandistances.append(function_output[2])
             final_minus_true.append(function_output[3])
             final_minus_nearest.append(function_output[4])
+            nearest_values.append(function_output[5])
+            nearest_distances.append(function_output[6])
+            nearest_x.append(function_output[7])
+            nearest_y.append(function_output[8])
+            point_x.append(function_output[9])
+            point_y.append(function_output[10])
             
             test_final_minus_true = np.abs(function_output[0] - function_output[1])
             if final_minus_true != test_final_minus_true:
@@ -588,19 +625,20 @@ def sintest():
 
 
     ### DAVID'S REQUESTED PLOT PER OCT 30 E-MAIL.
-    plt.scatter(final_minus_true, final_minus_nearest, s=10, alpha=0.1, c='r')
-    plt.plot(np.linspace(0,2,10), np.linspace(0,2,10), c='k    ')
+    plt.scatter(final_minus_true, final_minus_nearest, s=10, alpha=0.5, c=(meandistances/np.amax(meandistances)))
+    plt.plot(np.linspace(0,2,10), np.linspace(0,2,10), c='k')
     plt.xlabel('| Derived Function Value - True Function Value |')
     plt.ylabel('| Derived Function Value - Nearest Neighbor Function Value |')
-    plt.xlim(0,2)
-    plt.ylim(0,2)
+    plt.grid()
+    #plt.xlim(0,2)
+    #plt.ylim(0,2)
     #H, xedges, yedges = np.histogram2d(final_minus_nearest, final_minus_true, bins=400)
     #plt.colorbar()
     #plt.imshow(H, interpolation='none', origin='low')
-    plt.title('3D Interpolation Error')
+    plt.title(str(dim_choice)+'D Interpolation Error')
     plt.xlim(0,2)
     plt.ylim(0,2)
-    plt.grid()
+
     plt.show()
     
     
@@ -609,6 +647,33 @@ def sintest():
     #plt.show()
     
     
+    #PLOT NEAREST DISTANCES HISTOGRAM
+    n, bins, edges = plt.hist(nearest_distances, bins=50)
+    plt.xlabel('Distance to Nearest Neighbor')
+    #nearest_distance_stddev = np.std(nearest_distances)
+    #ndnegstd = np.mean(n)-nearest_distance_stddev
+    #ndposstd = np.mean(n)+nearest_distance_stddev
+    #plt.plot(np.linspace(ndnegstd,ndnegstd,10), np.linspace(0,np.amax(n)+100,10), c='r', linestyle='--')
+    #plt.plot(np.linspace(ndposstd,ndposstd,10), np.linspace(0,np.amax(n)+100,10), c='r', linestyle='--')
+    plt.grid()
+    plt.title('Nearest Neighbor Distances ('+str(len(col1))+' points)')
+    plt.show()
+
+
+    f = open('sample_points.txt', 'w')
+
+
+    for x,y,sc in zip(col2,col6,col8):
+        f.write(str(x)+' '+str(y)+' '+str(sc)+' \n')
+
+    f.close()
+
+
+    t = open('interpolation_results.txt', 'w')
+    for tx,ty,nnx,nny,nnv,dv,av in zip(point_x, point_y, nearest_x, nearest_y, nearest_values, interpvals, actvals):
+        t.write(str(tx)+' '+str(ty)+' '+str(nnx)+' '+str(nny)+' '+str(nnv)+' '+str(dv)+' '+str(av)+' \n')
+
+    t.close()
 
 ####### END SINUSOIDAL TEST FUNCTION #################        
 

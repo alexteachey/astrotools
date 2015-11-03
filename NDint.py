@@ -624,8 +624,50 @@ def sintest():
 
 
 
+
+    # NEAREST_DISTANCES SCATTER PLOT, WITH AVGS AND ERRORBARS.    
+    errorbins = np.linspace(np.amin(nearest_distances), np.amax(nearest_distances), 20)
+    print "errorbins = ", errorbins
+    errorbinsidx = np.digitize(nearest_distances, bins=errorbins) #each point is assigned a bin index. should be same length as meandistances array.
+    print "errorbinsidx = ", errorbinsidx
+    erroravgs = []
+    errorstds = []
+    for eb in range(0,len(errorbins)): #for each bin
+        print "eb = ", eb
+        print "np.where(errorbinsidx = eb) ", np.where(errorbinsidx == eb)
+        ebincount = len(np.where(errorbinsidx == eb)) #return the number of points in each bin
+        print "ebincount = ", ebincount
+        errors = value_differences[np.where(errorbinsidx == eb)] #np.where should return indices of the points in the given bin.
+        print "errors = ", errors
+        avgerror = np.mean(errors)
+        print 'avgerror = ', avgerror
+        errorstd = np.std(errors)
+        print "errorstd = ", errorstd
+        erroravgs.append(avgerror)
+        errorstds.append(errorstd)
+
+
+
+
+    try:
+        plt.scatter(nearest_distances, value_differences, s=8, color = value_differences/np.amax(np.abs(value_differences)), alpha=0.08)
+    except:
+        plt.scatter(nearest_distances, value_differences, s=8, alpha=0.08)
+    plt.errorbar(errorbins, erroravgs, yerr=errorstds, fmt=' ', color='r')
+    plt.scatter(errorbins, erroravgs, s=30, c='r')
+    plt.xlabel('distance from nearest point to interpolation points')
+    plt.ylabel('value differences (actual minus interpolation-derived)')
+    plt.ylim(-1,1)
+    plt.grid()
+    plt.title(str(dim_choice)+'D Error Function')
+    plt.show()
+
+
+
+
+
     ### DAVID'S REQUESTED PLOT PER OCT 30 E-MAIL.
-    plt.scatter(final_minus_true, final_minus_nearest, s=10, alpha=0.5, c=(meandistances/np.amax(meandistances)))
+    plt.scatter(final_minus_true, final_minus_nearest, s=10, alpha=0.5, c=(nearest_distances/np.amax(nearest_distances)))
     plt.plot(np.linspace(0,2,10), np.linspace(0,2,10), c='k')
     plt.xlabel('| Derived Function Value - True Function Value |')
     plt.ylabel('| Derived Function Value - Nearest Neighbor Function Value |')

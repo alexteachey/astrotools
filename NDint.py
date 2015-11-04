@@ -553,6 +553,11 @@ def sintest():
     posvalstd = np.mean(value_differences) + valstd
     print "len(value_differences) = ", len(value_differences)
 
+
+    weird_fmn = np.where(final_minus_nearest > 0.2) #this is peculiar to the morning of nov 3 run.
+    print "mean distances for weird fmn vals = ", meandistances[weird_fmn]
+    
+
     
     ### PLOT THE ERROR / DISTANCE HISTOGRAM
     n1,bins1,patches1 = plt.hist(value_differences/meandistances, 200)
@@ -646,9 +651,6 @@ def sintest():
         erroravgs.append(avgerror)
         errorstds.append(errorstd)
 
-
-
-
     try:
         plt.scatter(nearest_distances, value_differences, s=8, color = value_differences/np.amax(np.abs(value_differences)), alpha=0.08)
     except:
@@ -704,7 +706,9 @@ def sintest():
 
     f = open('sample_points.txt', 'w')
 
-
+    
+    
+    #WRITE THIS STUFF TO A FILE.
     for x,y,sc in zip(col2,col6,col8):
         f.write(str(x)+' '+str(y)+' '+str(sc)+' \n')
 
@@ -722,8 +726,6 @@ def sintest():
 
 
     
-    
-
 
 def bigshow(dims):
     test_type = 's'

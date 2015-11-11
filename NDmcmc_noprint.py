@@ -185,9 +185,9 @@ def pointgen(numdims):
 def interp(point,somedict): 
     numdims = len(point)
     if numdims == 2:
-        rows = np.vstack((somedict['col8'],somedict['col9']))
+        rows = np.vstack((somedict['col6'],somedict['col7']))
     elif numdims == 3:
-        rows = np.vstack((somedict['col4'],somedict['col8'],somedict['col9']))
+        rows = np.vstack((somedict['col2'],somedict['col6'],somedict['col7']))
 
     elif numdims == 4:
         rows = np.vstack((col1,col2,col3,col6))
@@ -197,7 +197,7 @@ def interp(point,somedict):
 
     #finding distance to each point
     distances = []
-    for i in np.arange(0,len(somedict['col4']),1): #for each point in your sample, calculate a distance.
+    for i in np.arange(0,len(somedict['col8']),1): #for each point in your sample, calculate a distance.
         distance = np.sqrt(np.sum( ( point - rows.T[i])**2) )
         ##print "distance = ", distance
         distances.append(distance)
@@ -288,7 +288,7 @@ def interp(point,somedict):
             found.append(1)
         except:
             realcoords.append(p)
-            functionvals.append(somedict['col2'][a])
+            functionvals.append(somedict['col8'][a])
             coords01.append(differences)
             #print "coord found = ", differences, tuple(p)
 
@@ -299,14 +299,14 @@ def interp(point,somedict):
                 coordinate_differences[tuple(differences)] = np.sqrt(np.sum( (p-point)**2 ) )
                 coordinate_indices[tuple(differences)] = a
                 #coordinate_vals[tuple(differences)] = col16[a]
-                coordinate_vals[tuple(differences)] = somedict['col2'][a]
+                coordinate_vals[tuple(differences)] = somedict['col8'][a]
             except:
                 coordinate_dictionary= {tuple(differences) : tuple(p)}
                 #coordinate_differences = {tuple(differences) : tuple(p - point)}
                 coordinate_differences = {tuple(differences) : np.sqrt(np.sum( (p-point)**2 ) ) }
                 coordinate_indices = {tuple(differences) : a}
                 #coordinate_vals = {tuple(differences) : col16[a]}
-                coordinate_vals = {tuple(differences) : somedict['col2'][a]}
+                coordinate_vals = {tuple(differences) : somedict['col8'][a]}
         if len(coordinate_dictionary) == numslots:
             break
 
@@ -479,7 +479,7 @@ def interp(point,somedict):
     
     #### RETURN SECTION ####
     if test_type == 'a':
-        return final_value, actual_value, c2cmean, final_minus_true, final_minus_nearest, nearest_value, sorted_distances[0], col2[sorted_args][0], col6[sorted_args][0], point[0], point[1]
+        return final_value, actual_value, c2cmean, final_minus_true, final_minus_nearest, nearest_value, sorted_distances[0], col8[sorted_args][0], col6[sorted_args][0], point[0], point[1]
     elif test_type == 's':
         if dim_choice == 2:
             return point[0], point[1], final_value, final_value/np.amax(col8), nearest_value, np.mean(functionvals), final_minus_true, final_minus_nearest

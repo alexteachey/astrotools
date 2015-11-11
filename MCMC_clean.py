@@ -8,6 +8,9 @@ try:
 except:
     pass
 import os
+from mpl_toolkits.mplot3d import Axes3D
+
+
 ln = np.log
 
 max_it = 1e3
@@ -44,6 +47,9 @@ def file_len(fname):
     return i+1
 
 
+
+filelength = file_len('../Data/KOI490_Archive/planet1.dat') #should be more dynamic.
+
 def mad(dataset):
     datamedian = np.median(dataset)
     dataset = np.array(dataset)
@@ -64,10 +70,13 @@ def read_data(txtfile, planetnum):
     col6 = []
     col7 = []
     col8 = []
-    col9 = []
+    #col9 = []
 
-    data = open('../Data/chains/'+str(txtfile), 'r')
-    for i in np.arange(0,31566,1): #not flexible right now
+
+
+    #data = open('../Data/chains/'+str(txtfile), 'r')
+    data = open('../Data/KOI490_Archive/'+str(txtfile), 'r')
+    for i in np.arange(0,filelength,1): #not flexible right now
         linedata = data.readline().split()
 
 
@@ -81,22 +90,24 @@ def read_data(txtfile, planetnum):
             col6.append(float(linedata[5]))
             col7.append(float(linedata[6]))
             col8.append(float(linedata[7]))
-            col9.append(float(linedata[8]))
+            #col9.append(float(linedata[8]))
         except:
             pass
 
     col1 = np.array(col1)
-    col2 = -0.5*np.array(col2) #MAKE SURE YOU"RE ONLY DOING THIS ONCE!
+    col2 = np.array(col2)
     col3 = np.array(col3)
-    col4 = np.array(col4)
+    col4 = np.array(col2)
     col5 = np.array(col5)
     col6 = np.array(col6)
     col7 = np.array(col7)
-    col8 = np.array(col8)
-    col9 = np.array(col9)
+    col8 = np.array(col8) 
+    #col9 = np.array(col9)
 
-    cols = [col1,col2,col3,col4,col5,col6,col7,col8,col9]
-    colnames = ['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9']
+    #cols = [col1,col2,col3,col4,col5,col6,col7,col8,col9]
+    cols = [col1, col2, col3, col4, col5, col6, col7, col8]
+    #colnames = ['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7', 'col8', 'col9']
+    colnames = ['col1', 'col2', 'col3', 'col4', 'col5', 'col6', 'col7', 'col8']
     for c,cn in zip(cols, colnames):
         try:
             column_dictionary[cn] = c
@@ -120,7 +131,7 @@ datatype = raw_input("Do you want to generate 'f'ake data, or use 'r'eal data? "
 if datatype == 'r':
     print " "
     print " "
-    os.system('ls ../Data/chains/')
+    os.system('ls ../Data/KOI490_Archive/')
     print " "
     print " "
     for n in [1,3,4]:
@@ -137,14 +148,28 @@ uber_column_dictionary = np.array(uber_column_dictionary)
 
 
 
-#use -0.5*col2, fit col4, col8, col9
-start_col4 = np.median([np.median(uber_column_dictionary[0]['col4']), np.median(uber_column_dictionary[1]['col4']), np.median(uber_column_dictionary[2]['col4'])])
-start_col8 = np.median([np.median(uber_column_dictionary[0]['col8']), np.median(uber_column_dictionary[1]['col8']), np.median(uber_column_dictionary[2]['col8'])])
-start_col9 = np.median([np.median(uber_column_dictionary[0]['col9']), np.median(uber_column_dictionary[1]['col9']), np.median(uber_column_dictionary[2]['col9'])])
+#use col8, fit col2, col6, col7
+start_col2 = np.median([np.median(uber_column_dictionary[0]['col2']), np.median(uber_column_dictionary[1]['col2']), np.median(uber_column_dictionary[2]['col2'])])
+start_col6 = np.median([np.median(uber_column_dictionary[0]['col6']), np.median(uber_column_dictionary[1]['col6']), np.median(uber_column_dictionary[2]['col6'])])
+start_col7 = np.median([np.median(uber_column_dictionary[0]['col7']), np.median(uber_column_dictionary[1]['col7']), np.median(uber_column_dictionary[2]['col7'])])
 
-jumpsize_col4 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col4']), mad(uber_column_dictionary[1]['col4']), mad(uber_column_dictionary[2]['col4'])])
-jumpsize_col8 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col8']), mad(uber_column_dictionary[1]['col8']), mad(uber_column_dictionary[2]['col8'])])
-jumpsize_col9 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col9']), mad(uber_column_dictionary[1]['col9']), mad(uber_column_dictionary[2]['col9'])])
+jumpsize_col2 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col2']), mad(uber_column_dictionary[1]['col2']), mad(uber_column_dictionary[2]['col2'])])
+#jumpsize_col6 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col6']), mad(uber_column_dictionary[1]['col6']), mad(uber_column_dictionary[2]['col6'])])
+#jumpsize_col7 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col7']), mad(uber_column_dictionary[1]['col7']), mad(uber_column_dictionary[2]['col7'])])
+
+jumpsize_col2 = jumpsize_col2/10
+jumpsize_col6 = 0.01
+jumpsize_col7 = 0.01
+
+#trying this scaling november 10th 2015
+#jumpsize_col2 = jumpsize_col2/100
+#jumpsize_col6 = jumpsize_col6/100
+#jumpsize_col7 = jumpsize_col7/100
+
+
+print "jumpsize_col2 = ", jumpsize_col2
+print "jumpsize_col6 = ", jumpsize_col6
+print "jumpsize_col7 = ", jumpsize_col7
 
 
 
@@ -155,6 +180,8 @@ jumpsize_col9 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col9']), mad(uber_
 # # # # # MCMC CODE # # # # # 
 burning = True
 for i in np.arange(0,max_it,1): #steps
+    if i >=1:
+        burning = False
     try:
         gocode = 1
         print " "
@@ -166,7 +193,7 @@ for i in np.arange(0,max_it,1): #steps
             ### INITIAL RUN.
             color_list.append(i/max_it)
             if datatype == 'r':
-                start_params = np.array([start_col4, start_col8, start_col9])
+                start_params = np.array([start_col2, start_col6, start_col7])
                 print "start_params (start_params) = ", start_params
             else:
                 start_params = np.random.choice(param_options, size=param_number)
@@ -192,6 +219,7 @@ for i in np.arange(0,max_it,1): #steps
 
             total_loglike = np.sum(loglikes)
             print "total_loglike = ", total_loglike
+
             function_1st_guess = total_loglike #INITIAL FUNCTION VALUE.
 
 
@@ -204,6 +232,8 @@ for i in np.arange(0,max_it,1): #steps
 
 
             new_loglike = total_loglike #trying this November 9, 2015
+
+
 
             loglike_list.append( new_loglike  )
 
@@ -226,27 +256,27 @@ for i in np.arange(0,max_it,1): #steps
         else: # ALL SUBSEQUENT RUNS.
             if gocode == 1:
                 if i == 1:
-                    start4 = np.random.normal(loc=param_guess_matrix[0], scale=jumpsize_col4)
-                    start8 = np.random.normal(loc=param_guess_matrix[1], scale=jumpsize_col8)
-                    start9 = np.random.normal(loc=param_guess_matrix[2], scale=jumpsize_col9)
-                    start_params = np.array([start4, start8, start9])
+                    start2 = np.random.normal(loc=param_guess_matrix[0], scale=jumpsize_col2) #trying this November 10 2015
+                    start6 = np.random.normal(loc=param_guess_matrix[1], scale=jumpsize_col6)
+                    start7 = np.random.normal(loc=param_guess_matrix[2], scale=jumpsize_col7)
+                    start_params = np.array([start2, start6, start7])
                     print "start_params = ", start_params 
                     print "param_guess_matrix shape = ", param_guess_matrix.shape
 
 
                 else:
                     if param_guess_matrix.shape == (param_number,):
-                        start4 = np.random.normal(loc=param_guess_matrix[0], scale=jumpsize_col4)
-                        start8 = np.random.normal(loc=param_guess_matrix[1], scale=jumpsize_col8)
-                        start9 = np.random.normal(loc=param_guess_matrix[2], scale=jumpsize_col9)
-                        start_params = np.array([start4, start8, start9])
+                        start2 = np.random.normal(loc=param_guess_matrix[0], scale=jumpsize_col2)
+                        start6 = np.random.normal(loc=param_guess_matrix[1], scale=jumpsize_col6)
+                        start7 = np.random.normal(loc=param_guess_matrix[2], scale=jumpsize_col7)
+                        start_params = np.array([start2, start6, start7])
                         print "start_params = ", start_params    
 
                     else:
-                        start4 = np.random.normal(loc=param_guess_matrix[-1][0], scale=jumpsize_col4)
-                        start8 = np.random.normal(loc=param_guess_matrix[-1][1], scale=jumpsize_col8)
-                        start9 = np.random.normal(loc=param_guess_matrix[-1][2], scale=jumpsize_col9)
-                        start_params = np.array([start4, start8, start9])
+                        start2 = np.random.normal(loc=param_guess_matrix[-1][0], scale=jumpsize_col2)
+                        start6 = np.random.normal(loc=param_guess_matrix[-1][1], scale=jumpsize_col6)
+                        start7 = np.random.normal(loc=param_guess_matrix[-1][2], scale=jumpsize_col7)
+                        start_params = np.array([start2, start6, start7])
                         print "start_params = ", start_params
 
                             
@@ -285,6 +315,12 @@ for i in np.arange(0,max_it,1): #steps
             total_loglike = np.sum(loglikes)
             print "total_loglike = ", total_loglike
 
+            try:
+                print "maximum loglike so far = ", np.amax(loglike_full_list)
+                print "percent of max (this iteration) = ", total_loglike/np.amax(loglike_full_list)
+            except:
+                pass
+
             y_guess = total_loglike
 
 
@@ -302,7 +338,7 @@ for i in np.arange(0,max_it,1): #steps
 
             loglike_full_list.append(new_loglike)
             
-            burning = False  ### NEEDS TO CHANGE!
+            #burning = False  ### NEEDS TO CHANGE!
 
             
             
@@ -338,9 +374,18 @@ for i in np.arange(0,max_it,1): #steps
             else:  ### IF loglike isn't BETTER.
                 normloglike = new_loglike/np.amax(loglike_list)
                 normlastloglike = loglike_list[-1]/np.amax(loglike_list)
+
+
+
+                ### THIS IS PROBLEMATIC... THE FIRST WAY BELOW ALWAYS RESULTS IN PROB = 0. THE SECOND WAS IS ALWAYS PROB = 0.999.
+
                 #prob = np.exp(-((loglike_list[-1] - new_loglike)**2)/2) # THIS MAY NEED TO CHANGE.
-                prob = np.exp(-((normlastloglike - normloglike)**2)/2) #TRYING THIS NOVEMBER 9 2015
+                #prob = np.exp(-((normlastloglike - normloglike)**2)/2) #TRYING THIS NOVEMBER 9 2015
+                #prob = np.exp( -( (1 / ((new_loglike)/loglike_list[-1]) ) ) )
+                prob = np.exp(0.5 * (new_loglike - loglike_list[-1])) #DAVID'S FORMULATION -- NOVEMBER 10th 2015
                 print 'prob = ', prob 
+
+
 
                 random_draw = np.random.normal(loc=0.5, scale=0.1)
                 print "random_draw = ", random_draw
@@ -398,6 +443,7 @@ for i in np.arange(0,max_it,1): #steps
         print " "
     
     except KeyError:
+        print "Couldn't find a necessary coordinate for the interpolation."
         continue
     
     
@@ -447,13 +493,28 @@ try:
     plt.scatter(true_params[param_number-2], true_params[param_number-1], label='True Value', c='r', marker='*', s=200)
 except:
     pass
-plt.scatter(param_guess_matrix.T[param_number-2][np.argmin(loglike_list)], param_guess_matrix.T[param_number-1][np.argmin(loglike_list)], s=200, label='Final Value', c='g', marker='v')
+plt.scatter(param_guess_matrix.T[param_number-2][np.argmax(loglike_list)], param_guess_matrix.T[param_number-1][np.argmax(loglike_list)], s=200, label='Maximum Likelihood', c='g', marker='v')
 plt.legend(scatterpoints=1, loc=0)
 plt.grid()
 plt.title('Random Walk')
 #plt.savefig('MCMC_random_walk.pdf', dpi=100, clobber=True)
 plt.show()
 
+
+
+### TRYING 3D RANDOM WALK VISUALIZATION
+"""
+try:
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(param_guess_matrix.T[param_number-2], param_guess_matrix.T[param_number-1], zs=param_guess_matrix.T[param_number], s=20, c=color_list, alpha=0.2)
+    ax.scatter(param_guess_matrix[0][param_number-2], param_guess_matrix[1][param_number-1], zs=param_guess_matrix[2][param_number], s=80, c='g', marker='s')
+    ax.scatter(param_guess_matrix.T[param_number-2][np.argmax(loglike_list)], param_guess_matrix.T[param_number-1][np.argmax(loglike_list)], zs=param_guess_matrix.T[param_number][np.argmax(loglike_list)], s=200, c='g', marker='v')
+    ax.title('Random Walk')
+    ax.show()
+except:
+    pass
+"""
 
 ### RANDOM WALK VISUALIZATION (POST BURN)
 """
@@ -474,16 +535,24 @@ plt.show()
 
 
 
-##PLOT X2 Test
+##PLOT loglike_list
 plt.plot(np.arange(0,len(loglike_list), 1), loglike_list)
-plt.ylim(0,np.amax(loglike_list))
-plt.title(r'$\chi^2$ Values vs Accepted Iteration')
+#plt.ylim(0,np.amax(loglike_list))
+plt.title('log(likelihood) Values vs Accepted Iteration')
 plt.grid()
 #plt.savefig('MCMC_X2.pdf', dpi=100)
 plt.show()
 
 
+###PLOT loglike_full_list
+plt.plot(np.arange(0,len(loglike_full_list), 1), loglike_full_list)
+plt.title('All log(likelihood) values')
+plt.grid()
+plt.show()
+
+
 #posterior distributions
+"""
 for param in np.arange(0,param_number,1):
     postburn =int( max_it/5)
     n, bins, patches = P.hist(param_full_matrix.T[param][postburn:], 50)
@@ -491,10 +560,40 @@ for param in np.arange(0,param_number,1):
     stddev = np.std(param_full_matrix.T[param][postburn:])
     median = np.median(param_full_matrix.T[param][postburn:])
     P.plot(np.linspace(median, median, 100), np.linspace(0,np.amax(n)+100,100), c='r', label='Median')
-    P.plot(np.linspace(param_full_matrix.T[param][np.argmin(loglike_full_list)], param_full_matrix.T[param][np.argmin(loglike_full_list)], 100), np.linspace(0,np.amax(n)+100, 100), c='b', label='Best')
+    P.plot(np.linspace(param_full_matrix.T[param][np.argmax(loglike_full_list)], param_full_matrix.T[param][np.argmax(loglike_full_list)], 100), np.linspace(0,np.amax(n)+100, 100), c='b', label='Maximum Likelihood')
     P.plot(np.linspace(median-stddev, median-stddev,100), np.linspace(0,np.amax(n)+100,100), c='g', label=r'1 $\sigma$')
     P.plot(np.linspace(median+stddev, median+stddev,100), np.linspace(0,np.amax(n)+100,100), c='g')
-    P.title('Coefficient '+str(param)+' = '+str(median))
+    P.legend()
+    if param == 0:
+        P.title('Stellar Density, median = '+str(median))
+    elif param == 1:
+        P.title('q1, median = '+str(median))
+    elif param == 2:
+        P.title('q2, median = '+str(median))
+    #P.title('Coefficient '+str(param)+' = '+str(median))
+    P.grid()
+    P.show()
+"""
+
+### USING ONLY ACCEPTED TRIALS -- FORGET ABOUT THE POSTBURN.
+for param in np.arange(0,param_number,1):
+    postburn =int( max_it/10)
+    n, bins, patches = P.hist(param_guess_matrix.T[param][postburn:], 50)
+    P.ylim(0,np.amax(n)+100)
+    stddev = np.std(param_guess_matrix.T[param][postburn:])
+    median = np.median(param_guess_matrix.T[param][postburn:])
+    P.plot(np.linspace(median, median, 100), np.linspace(0,np.amax(n)+100,100), c='r', label='Median')
+    P.plot(np.linspace(param_guess_matrix.T[param][np.argmax(loglike_list)], param_guess_matrix.T[param][np.argmax(loglike_list)], 100), np.linspace(0,np.amax(n)+100, 100), c='b', label='Maximum Likelihood')
+    P.plot(np.linspace(median-stddev, median-stddev,100), np.linspace(0,np.amax(n)+100,100), c='g', label=r'1 $\sigma$')
+    P.plot(np.linspace(median+stddev, median+stddev,100), np.linspace(0,np.amax(n)+100,100), c='g')
+    P.legend()
+    if param == 0:
+        P.title('Stellar Density, median = '+str(median))
+    elif param == 1:
+        P.title('q1, median = '+str(median))
+    elif param == 2:
+        P.title('q2, median = '+str(median))
+    #P.title('Coefficient '+str(param)+' = '+str(median))
     P.grid()
     P.show()
 
@@ -521,20 +620,20 @@ figure.show()
 ### CALCULATE BIC
 print " "
 print " "
-best_X2 = np.amin(loglike_list)
-best_coefs = param_guess_matrix[np.argmin(loglike_list)]
+best_loglike = np.amax(loglike_list)
+best_params = param_guess_matrix[np.argmax(loglike_list)]
 
 
-#Likelihood = best_X2 + len(xvals)*np.log(param_number) # WHAT DAVID TOLD ME TO DO
-#Likelihood = best_X2 + param_number*np.log(len(xvals)) # reversing the meanings of k and N.
+#Likelihood = best_loglike + len(xvals)*np.log(param_number) # WHAT DAVID TOLD ME TO DO
+#Likelihood = best_loglike + param_number*np.log(len(xvals)) # reversing the meanings of k and N.
 
 #NEW BIC FORMULA FROM DAVID:
-BIC = best_X2 + param_number*(np.log(len(xvals)))
+BIC = best_loglike + param_number*(np.log(len(xvals)))
 
 #BIC = -2 * np.log(Likelihood) + param_number*np.log(len(xvals))  ### VERY SUSPICIOUS ABOUT THIS.
 
 #print "Likelihood = ", Likelihood
 print "BIC = ", BIC
-print "best X2 = ", best_X2
-print "coefficients are ", param_full_matrix[np.argmin(loglike_full_list)]
+print "best log(likelihood) = ", best_loglike
+print "parameters are = ", best_params
 

@@ -16,7 +16,7 @@ savefile_name = raw_input("What do you want to call your param_guess_matrix nump
 
 ln = np.log
 
-max_it = 1e5
+max_it = 3e4
 
 xvals = []
 yvals = []
@@ -147,6 +147,9 @@ if datatype == 'r':
         yourfile = raw_input('What is the name of the file you want to load? ')
         uber_column_dictionary.append(read_data(yourfile, n))
     """
+
+
+    ### NOV 12, 2015 --- trying to recover the individual parameters of each planet. See how we do.
     uber_column_dictionary.append(read_data('planet1.dat', 1))
     uber_column_dictionary.append(read_data('planet3.dat', 3))
     uber_column_dictionary.append(read_data('planet4.dat', 4))
@@ -162,6 +165,21 @@ uber_column_dictionary = np.array(uber_column_dictionary)
 
 
 #use col8, fit col2, col6, col7
+### USE FOR A SINGLE PLANET FITTING.
+"""
+start_col2 = np.median(np.log10(uber_column_dictionary[0]['col2']))
+start_col6 = np.median(np.median(uber_column_dictionary[0]['col6']))
+start_col7 = np.median(np.median(uber_column_dictionary[0]['col7']))
+
+jumpsize_col2 = mad(np.log10(uber_column_dictionary[0]['col2']))
+jumpsize_col6 = mad(uber_column_dictionary[0]['col6'])
+jumpsize_col7 = mad(uber_column_dictionary[0]['col7'])
+"""
+
+
+
+### USE FOR MULTIPLE PLANETS.
+
 start_col2 = np.median([np.median(np.log10(uber_column_dictionary[0]['col2'])), np.median(np.log10(uber_column_dictionary[1]['col2'])), np.median(np.log10(uber_column_dictionary[2]['col2']))])
 #start_col2 = np.median([np.median(uber_column_dictionary[0]['col2']), np.median(uber_column_dictionary[1]['col2']), np.median(uber_column_dictionary[2]['col2'])])
 start_col6 = np.median([np.median(uber_column_dictionary[0]['col6']), np.median(uber_column_dictionary[1]['col6']), np.median(uber_column_dictionary[2]['col6'])])
@@ -172,14 +190,7 @@ jumpsize_col2 = 1.4 * np.amin([mad(np.log10(uber_column_dictionary[0]['col2'])),
 jumpsize_col6 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col6']), mad(uber_column_dictionary[1]['col6']), mad(uber_column_dictionary[2]['col6'])])
 jumpsize_col7 = 1.4 * np.amin([mad(uber_column_dictionary[0]['col7']), mad(uber_column_dictionary[1]['col7']), mad(uber_column_dictionary[2]['col7'])])
 
-#jumpsize_col2 = jumpsize_col2/10
-#jumpsize_col6 = 0.01
-#jumpsize_col7 = 0.01
 
-#trying this scaling november 10th 2015
-#jumpsize_col2 = jumpsize_col2/100
-#jumpsize_col6 = jumpsize_col6/100
-#jumpsize_col7 = jumpsize_col7/100
 
 
 print "jumpsize_col2 = ", jumpsize_col2
@@ -655,7 +666,7 @@ if plot_option == 'y':
     #BIC = -2 * np.log(Likelihood) + param_number*np.log(len(xvals))  ### VERY SUSPICIOUS ABOUT THIS.
 
     #print "Likelihood = ", Likelihood
-    print "BIC = ", BIC
+    #print "BIC = ", BIC
     print "best log(likelihood) = ", best_loglike
     print "parameters are = ", best_params
 
@@ -666,4 +677,28 @@ if plot_option == 'y':
     ax = fig.add_subplot(111, projection='3d')
     #ax.scatter(col2,col6,col7, c=(col8/np.amax(col8)), alpha=0.3, s=20)
     ax.scatter(param_guess_matrix.T[0], param_guess_matrix.T[1], param_guess_matrix.T[2], c=(np.array(loglike_list)/np.amax(loglike_list)), alpha=0.3, s=20)
+    ax.set_xlabel('Log(density)')
+    ax.set_ylabel('q1')
+    ax.set_zlabel('q2')
+    try:
+        ax.contourf(param_guess_matrix.T[0], param_guess_matrix.T[1], param_guess_matrix.T[2])
+    except:
+        pass
+    plt.show()
+
+
+
+
+    ### 3D plotting
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    #ax.scatter(col2,col6,col7, c=(col8/np.amax(col8)), alpha=0.3, s=20)
+    ax.scatter(param_guess_matrix.T[0], param_guess_matrix.T[1], param_guess_matrix.T[2], c=(np.array(loglike_list)/np.amax(loglike_list)), alpha=0.3, s=20)
+    ax.set_xlabel('Log(density)')
+    ax.set_ylabel('q1')
+    ax.set_zlabel('q2')
+    try:
+        ax.contourf3D(param_guess_matrix.T[0], param_guess_matrix.T[1], param_guess_matrix.T[2])
+    except:
+        pass
     plt.show()
